@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "joker_lottery_models"
-version = "0.1.0"
+version = "0.2.0"
 description = "Try to analyze the joker data statistically and develop AI models just for fun"
 authors = ["Afshin Dini <Afshin Dini>"]
 readme = "README.md"
