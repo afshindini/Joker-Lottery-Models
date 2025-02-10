@@ -53,7 +53,8 @@ class FrequencyAnalysisBase(Dataset, ABC):
 
     @abstractmethod
     def frequent_per_year_week_day(self) -> Tuple[List[int], List[float]]:
-        """Find the most frequent number considering data in a specific year/week/day and calculates their probabilities"""
+        """Find the most frequent number considering data in a specific year/week/day and calculates their
+        probabilities"""
         return [], []
 
     @abstractmethod
