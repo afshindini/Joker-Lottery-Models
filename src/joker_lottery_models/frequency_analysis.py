@@ -1,6 +1,7 @@
 """Apply different frequency analysis methods to lottery data"""
 
 from dataclasses import dataclass, field
+from abc import ABC, abstractmethod
 from typing import List, Literal, Tuple
 
 import logging
@@ -12,8 +13,8 @@ logger = logging.getLogger(__name__)
 
 
 @dataclass
-class FrequencyAnalysis(Dataset):
-    """Apply frequency analysis to the lottery data"""
+class FrequencyAnalysisBase(Dataset, ABC):
+    """Apply frequency analysis per position to the lottery data"""
 
     year: int = field(default=2025)
     week: int = field(default=1)
@@ -50,7 +51,27 @@ class FrequencyAnalysis(Dataset):
             logger.info("Check frequency analysis for all available data.")
         return grouped_data
 
-    def frequent_position_per_year_week_day(
+    @abstractmethod
+    def frequent_per_year_week_day(self) -> Tuple[List[int], List[float]]:
+        """Find the most frequent number considering data in a specific year/week/day and calculates their probabilities"""
+        return [], []
+
+    @abstractmethod
+    def odd_even_frequency(self) -> Tuple[List[Literal["odd", "even"]], List[float]]:
+        """Find the frequency of odd and even numbers"""
+        return [], []
+
+    @abstractmethod
+    def high_low_frequency(self) -> Tuple[List[Literal["high", "low"]], List[float]]:
+        """Find the frequency of high and low numbers"""
+        return [], []
+
+
+@dataclass
+class FrequencyAnalysisPosition(FrequencyAnalysisBase):
+    """Apply frequency analysis per position to the lottery data"""
+
+    def frequent_per_year_week_day(
         self, period: str = "year", digit: str = "d2"
     ) -> Tuple[List[int], List[float]]:
         """Find the most frequent number in each position considering data in a specific year/week/day
@@ -84,8 +105,48 @@ class FrequencyAnalysis(Dataset):
         ]
         return ["high", "low"], high_low_prob
 
+
+@dataclass
+class FrequencyAnalysisGeneral(FrequencyAnalysisBase):
+    """Apply frequency analysis to the lottery data"""
+
+    def frequent_per_year_week_day(
+        self, period: str = "year"
+    ) -> Tuple[List[int], List[float]]:
+        """Find the most frequent number of all digits considering data per year/week/day and calculates their probabilities"""
+        temp = self.data_selection(period)
+        stacked_count = temp[self.headers[3:]].stack().value_counts()
+        probabilities = [
+            val / sum(stacked_count.tolist()) for val in stacked_count.tolist()
+        ]
+        return stacked_count.index.tolist(), probabilities
+
+    def odd_even_frequency(
+        self, period: str = "year"
+    ) -> Tuple[List[Literal["odd", "even"]], List[float]]:
+        """Find the frequency of odd and even numbers for all digits"""
+        temp = self.data_selection(period)
+        stacked_count = temp[self.headers[3:]].stack().value_counts()
+        odd_even_prob = [
+            sum(stacked_count[stacked_count.index % 2 == 1]) / sum(stacked_count),
+            sum(stacked_count[stacked_count.index % 2 == 0]) / sum(stacked_count),
+        ]
+        return ["odd", "even"], odd_even_prob
+
+    def high_low_frequency(
+        self, period: str = "year"
+    ) -> Tuple[List[Literal["high", "low"]], List[float]]:
+        """Find the frequency of high and low numbers for all digits"""
+        temp = self.data_selection(period)
+        stacked_count = temp[self.headers[3:]].stack().value_counts()
+        high_low_prob = [
+            sum(stacked_count[stacked_count.index > 4]) / sum(stacked_count),
+            sum(stacked_count[stacked_count.index <= 4]) / sum(stacked_count),
+        ]
+        return ["high", "low"], high_low_prob
+
     def frequent_digits_all(self) -> Tuple[List[int], List[float]]:
-        """Find the most frequent digit in all positions nad their probabilities"""
+        """Find the most frequent digit in all positions and their probabilities"""
         stacked_count = self.data[self.headers[3:]].stack().value_counts()
         probabilities = [
             val / sum(stacked_count.tolist()) for val in stacked_count.tolist()
