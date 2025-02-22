@@ -39,16 +39,12 @@ class FrequencyAnalysisBase(Dataset, ABC):
         """Select data based on the period of year/week/day"""
         if period == "year":
             grouped_data = self.data.groupby("year").get_group(self.year)
-            logger.info("Check frequency analysis for %s %s data.", period, self.year)
         elif period == "week":
             grouped_data = self.data.groupby("week").get_group(self.week)
-            logger.info("Check frequency analysis for  %s %s data.", period, self.week)
         elif period == "day":
             grouped_data = self.data.groupby("day").get_group(self.day)
-            logger.info("Check frequency analysis for %s %s data.", period, self.day)
         else:
             grouped_data = self.data
-            logger.info("Check frequency analysis for all available data.")
         return grouped_data
 
     @abstractmethod
@@ -83,6 +79,14 @@ class FrequencyAnalysisPosition(FrequencyAnalysisBase):
             val / len(temp) for val in temp[digit].value_counts().tolist()
         ]
         return frequents, frequents_prob
+
+    def frequent_per_year_week_day_digits(self, period: str = "year") -> List[int]:
+        """Find the most frequent digit in all positions considering data in a specific year/week/day and calculates their probabilities"""
+        result = []
+        for dig in self.headers[3:]:
+            temp = self.frequent_per_year_week_day(period, dig)[0]
+            result.append(temp[0])
+        return result
 
     def odd_even_frequency(
         self, period: str = "year", digit: str = "d1"
