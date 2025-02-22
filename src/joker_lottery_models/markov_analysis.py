@@ -40,16 +40,12 @@ class MarkovAnalysis(Dataset):
         """Select data based on the period of data"""
         if period == "year":
             grouped_data = self.data.groupby("year").get_group(self.year)
-            logger.info("Check frequency analysis for %s %s data.", period, self.year)
         elif period == "week":
             grouped_data = self.data.groupby("week").get_group(self.week)
-            logger.info("Check frequency analysis for %s %s data.", period, self.week)
         elif period == "day":
             grouped_data = self.data.groupby("day").get_group(self.day)
-            logger.info("Check frequency analysis for %s %s data.", period, self.day)
         else:
             grouped_data = self.data
-            logger.info("Check frequency analysis for all available data.")
         grouped_data.loc[:, "whole_number"] = grouped_data.apply(
             lambda x: str(x["d1"])
             + str(x["d2"])
