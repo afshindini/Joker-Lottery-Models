@@ -9,6 +9,7 @@ poetry.lock
 .coverage.*
 .cache
 .pytest_cache/
+src/joker_lottery_models/__pycache__/*
 
 # mypy files
 .mypy_cache/
@@ -18,7 +19,3 @@ poetry.lock
 .venv
 env/
 venv/
-
-
-
-
