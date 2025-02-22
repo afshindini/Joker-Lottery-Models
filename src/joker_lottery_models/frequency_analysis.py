@@ -1,5 +1,6 @@
 """Apply different frequency analysis methods to lottery data"""
 
+# pylint: disable=W1202,C0209,R0801
 from dataclasses import dataclass, field
 from abc import ABC, abstractmethod
 from typing import List, Literal, Tuple
@@ -86,6 +87,11 @@ class FrequencyAnalysisPosition(FrequencyAnalysisBase):
         for dig in self.headers[3:]:
             temp = self.frequent_per_year_week_day(period, dig)[0]
             result.append(temp[0])
+        logger.info(
+            "Prediction with frequency analysis in {} separate positions: {}".format(
+                period, result
+            )
+        )
         return result
 
     def odd_even_frequency(
@@ -124,6 +130,11 @@ class FrequencyAnalysisGeneral(FrequencyAnalysisBase):
         probabilities = [
             val / sum(stacked_count.tolist()) for val in stacked_count.tolist()
         ]
+        logger.info(
+            "Prediction with frequency analysis in {} for all data: {}".format(
+                period, stacked_count.index.tolist()
+            )
+        )
         return stacked_count.index.tolist(), probabilities
 
     def odd_even_frequency(

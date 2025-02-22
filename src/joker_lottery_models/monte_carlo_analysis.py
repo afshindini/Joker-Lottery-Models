@@ -1,5 +1,6 @@
-"""Monte Carlo analysis for lottery models."""
+"""Monte Carlo implementation for lottery models."""
 
+# pylint: disable=W1202,C0209,R0801
 from dataclasses import dataclass, field
 from typing import List, Tuple
 
@@ -71,4 +72,7 @@ class MonteCarloAnalysis(Dataset):
                 / no_simulation
             )
             simulated_draws.append(max(set(suggested), key=suggested.count))
+        logger.info(
+            "Monte Carlo simulation for {} is: {}".format(period, simulated_draws)
+        )
         return simulated_draws, simulated_prob

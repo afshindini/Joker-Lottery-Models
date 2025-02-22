@@ -1,5 +1,6 @@
 """Implement Markov chain analysis for lottery numbers"""
 
+# pylint: disable=W1202,C0209,R0801
 from dataclasses import dataclass, field
 from typing import List, Tuple, Any
 
@@ -93,4 +94,7 @@ class MarkovAnalysis(Dataset):
             predicted_number.append(int(next_digit))
             probability.append(float(historical_matrix[first_digit][next_digit]))
             first_digit = next_digit
+        logger.info(
+            "Predicted numbers with markov chain is: {}".format(predicted_number)
+        )
         return predicted_number, probability
